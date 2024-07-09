@@ -477,7 +477,7 @@ defmodule Cluster.Strategy.Kubernetes do
             "metadata" => %{"namespace" => ns, "name" => name},
             "spec" => pod_spec
           } ->
-            %{ip: ip, namespace: ns, hostname: pod_spec["hostname"] || name}
+            %{ip: ip, namespace: ns, hostname: pod_spec["hostname"], name: name}
 
           _ ->
             nil
@@ -491,6 +491,9 @@ defmodule Cluster.Strategy.Kubernetes do
 
   defp format_node(:ip, %{ip: ip}, app_name, _cluster_name, _service_name),
     do: :"#{app_name}@#{ip}"
+
+  defp format_node(:name, %{name: name}, app_name, _cluster_name, _service_name),
+    do: :"#{app_name}@#{name}"
 
   defp format_node(
          :hostname,
