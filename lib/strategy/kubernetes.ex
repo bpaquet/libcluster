@@ -474,10 +474,10 @@ defmodule Cluster.Strategy.Kubernetes do
         Enum.map(items, fn
           %{
             "status" => %{"podIP" => ip},
-            "metadata" => %{"namespace" => ns, "name" => name},
+            "metadata" => %{"namespace" => ns},
             "spec" => pod_spec
           } ->
-            %{ip: ip, namespace: ns, hostname: pod_spec["hostname"], name: name}
+            %{ip: ip, namespace: ns, hostname: pod_spec["hostname"]}
 
           _ ->
             nil
@@ -492,8 +492,10 @@ defmodule Cluster.Strategy.Kubernetes do
   defp format_node(:ip, %{ip: ip}, app_name, _cluster_name, _service_name),
     do: :"#{app_name}@#{ip}"
 
-  defp format_node(:name, %{name: name}, app_name, _cluster_name, _service_name),
-    do: :"#{app_name}@#{name}"
+  defp format_node(:ip_with_dashes, %{ip: ip}, app_name, _cluster_name, _service_name) do
+    ip = String.replace(ip, ".", "-")
+    :"#{app_name}@#{ip}"
+  end
 
   defp format_node(
          :hostname,
